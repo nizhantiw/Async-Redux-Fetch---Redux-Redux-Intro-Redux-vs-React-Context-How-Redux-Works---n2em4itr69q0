@@ -3,22 +3,35 @@ import "../styles/App.css";
 import { useSelector, useDispatch } from "react-redux";
 import { actions } from "./store";
 
-const API_KEY = "";   //Get your own api key from newsapi
+const API_KEY = "f987415313da4ae481971fcb5c94772a"; //Get your own api key from newsapi
 
 const App = () => {
+  const [newsCount, setNewsCount] = useState(1);
   const dispatch = useDispatch();
-  const newsObj = useSelector();
+
+  //useSelector allow use to access the state of store
+  const newsObj = useSelector((state) => state.news);
+
+  //fetching data and dispatching result to store
   useEffect(() => {
-    
-  }, []);
+    async function fetchdata() {
+      const data = await fetch(
+        ` https://newsapi.org/v2/top-headlines?country=us&apiKey=${API_KEY}&pageSize=${newsCount}`
+      );
+      const res = await data.json();
+      dispatch(actions.setnews(res.articles));
+      return res;
+    }
+    fetchdata();
+  }, [newsCount]);
 
   const numChangeHandler = (e) => {
+    if (e.target.value !== "") setNewsCount(e.target.value);
   };
 
-  let articles = [];
+  let articles = [...newsObj.articles];
 
-  const filteredArticles = articles
-    
+  const filteredArticles = articles;
 
   return (
     <div id="main">
@@ -28,17 +41,17 @@ const App = () => {
         <input
           type="number"
           id="num"
-          onChange={}
-          min={}
+          onChange={numChangeHandler}
+          min={1}
         ></input>
       </div>
       {newsObj.articlesNum !== 0 ? (
         <div>
           <h3>Top {newsObj.articlesNum} articles</h3>
           <ul id="articles">
-            {filteredArticles.map((item) => {
+            {filteredArticles.map((item, index) => {
               return (
-                <li>
+                <li key={index}>
                   <div className="article">
                     Author: {item.author}
                     <h2>{item.title}</h2>
