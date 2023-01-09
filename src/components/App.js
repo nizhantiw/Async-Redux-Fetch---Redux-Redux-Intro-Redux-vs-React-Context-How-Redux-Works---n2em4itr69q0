@@ -1,37 +1,34 @@
-import React, { useEffect } from "react";
+import React, { useEffect, useState } from "react";
 import "../styles/App.css";
 import { useSelector, useDispatch } from "react-redux";
 import { actions } from "./store";
 
-const API_KEY = "f987415313da4ae481971fcb5c94772a"; //Get your own api key from newsapi
+const API_KEY = "1bece6d43f784fba8e45baca9e8040b1"; //Get your own api key from newsapi
 
 const App = () => {
-  const [newsCount, setNewsCount] = useState(1);
   const dispatch = useDispatch();
+  const newsObj = useSelector((state) => state.hotNews);
 
-  //useSelector allow use to access the state of store
-  const newsObj = useSelector((state) => state.news);
-
-  //fetching data and dispatching result to store
   useEffect(() => {
-    async function fetchdata() {
-      const data = await fetch(
-        ` https://newsapi.org/v2/top-headlines?country=us&apiKey=${API_KEY}&pageSize=${newsCount}`
+    fetch(
+      "https://newsapi.org/v2/top-headlines?country=us&apiKey=1bece6d43f784fba8e45baca9e8040b1"
+    )
+      .then((res) => res.json())
+      .then((data) =>
+        dispatch(actions.set({ articles: data.articles, num: 5 }))
       );
-      const res = await data.json();
-      dispatch(actions.setnews(res.articles));
-      return res;
-    }
-    fetchdata();
-  }, [newsCount]);
+  }, []);
 
   const numChangeHandler = (e) => {
-    if (e.target.value !== "") setNewsCount(e.target.value);
+    dispatch(actions.setNum({ num: e.target.value }));
   };
-
   let articles = [...newsObj.articles];
 
-  const filteredArticles = articles;
+  console.log(newsObj, "newobje");
+
+  let filteredArticles = articles
+    .sort(() => Math.random() - 0.5)
+    .slice(0, newsObj.articlesNum);
 
   return (
     <div id="main">
@@ -49,9 +46,9 @@ const App = () => {
         <div>
           <h3>Top {newsObj.articlesNum} articles</h3>
           <ul id="articles">
-            {filteredArticles.map((item, index) => {
+            {filteredArticles.map((item) => {
               return (
-                <li key={index}>
+                <li key={item.author}>
                   <div className="article">
                     Author: {item.author}
                     <h2>{item.title}</h2>
