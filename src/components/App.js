@@ -3,7 +3,7 @@ import "../styles/App.css";
 import { useSelector, useDispatch } from "react-redux";
 import { actions } from "./store";
 
-const API_KEY = "1bece6d43f784fba8e45baca9e8040b1"; //Get your own api key from newsapi
+const API_KEY = "3dd31d0b4458405cbd7ce255d151d726"; //Get your own api key from newsapi
 
 const App = () => {
   const dispatch = useDispatch();
